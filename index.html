@@ -18,7 +18,6 @@
       font-family: sans-serif;
     }
 
-    /* LED strips effect */
     body::before, body::after {
       content: "";
       position: absolute;
@@ -40,7 +39,6 @@
     }
 
     model-viewer {
-      --floor-color: #111;
       width: 90%;
       height: 90%;
       border-radius: 16px;
@@ -56,6 +54,24 @@
       letter-spacing: 2px;
       opacity: 0.8;
     }
+
+    .btn {
+      position: absolute;
+      bottom: 30px;
+      padding: 12px 18px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid white;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: white;
+      color: black;
+    }
   </style>
 </head>
 
@@ -63,24 +79,53 @@
 
 <div class="title">Luxury Garage • Interactive Viewer</div>
 
+<button class="btn" onclick="toggleView()">Switch View</button>
+
 <model-viewer
+  id="car"
   src="toyota_gt-86.glb"
   alt="3D Car"
-  auto-rotate
   camera-controls
-  shadow-softness="1"
   exposure="1.2"
-
+  shadow-intensity="1.5"
+  shadow-softness="1"
   environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
   skybox-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-
   tone-mapping="aces"
-  camera-orbit="45deg 75deg 2.5m"
-  min-camera-orbit="auto auto 1.5m"
-  max-camera-orbit="auto auto 5m"
 >
 </model-viewer>
 
+<script>
+  const viewer = document.getElementById("car");
+
+  let insideView = true;
+
+  const driverView = {
+    orbit: "0deg 90deg 1.2m",
+    target: "0m 1m 0m"
+  };
+
+  const outsideView = {
+    orbit: "45deg 75deg 3m",
+    target: "0m 0.5m 0m"
+  };
+
+  function toggleView() {
+    insideView = !insideView;
+
+    if (insideView) {
+      viewer.cameraOrbit = driverView.orbit;
+      viewer.cameraTarget = driverView.target;
+    } else {
+      viewer.cameraOrbit = outsideView.orbit;
+      viewer.cameraTarget = outsideView.target;
+    }
+  }
+
+  // set default view
+  viewer.cameraOrbit = driverView.orbit;
+  viewer.cameraTarget = driverView.target;
+</script>
+
 </body>
 </html>
-
