@@ -11,80 +11,57 @@
       margin: 0;
       height: 100vh;
       background: radial-gradient(circle at center, #111 0%, #000 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
       overflow: hidden;
       font-family: sans-serif;
     }
 
-    body::before, body::after {
-      content: "";
-      position: absolute;
-      width: 200%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, white, transparent);
-      opacity: 0.3;
-      animation: move 6s linear infinite;
-    }
-
-    body::after {
-      top: 70%;
-      animation-delay: 3s;
-    }
-
-    @keyframes move {
-      0% { transform: translateX(-50%); }
-      100% { transform: translateX(50%); }
-    }
-
     model-viewer {
-      width: 90%;
-      height: 90%;
-      border-radius: 16px;
-      background: rgba(0,0,0,0.9);
-      box-shadow: 0 0 60px rgba(255,255,255,0.1);
+      width: 100vw;
+      height: 100vh;
+      background: black;
     }
 
-    .title {
+    /* UI layer ABOVE everything */
+    .ui {
       position: absolute;
       top: 20px;
-      color: white;
-      font-size: 1.5rem;
-      letter-spacing: 2px;
-      opacity: 0.8;
+      left: 20px;
+      z-index: 10;
     }
 
     .btn {
-      position: absolute;
-      bottom: 30px;
-      padding: 12px 18px;
+      padding: 12px 16px;
       background: rgba(255,255,255,0.1);
       border: 1px solid white;
       color: white;
       cursor: pointer;
       border-radius: 8px;
       backdrop-filter: blur(10px);
-      transition: 0.3s;
     }
 
     .btn:hover {
       background: white;
       color: black;
     }
+
+    .label {
+      color: white;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
   </style>
 </head>
 
 <body>
 
-<div class="title">Luxury Garage • Interactive Viewer</div>
-
-<button class="btn" onclick="toggleView()">Switch View</button>
+<div class="ui">
+  <div class="label" id="mode">Exterior View</div>
+  <button class="btn" onclick="toggleView()">Switch View</button>
+</div>
 
 <model-viewer
   id="car"
   src="toyota_gt-86.glb"
-  alt="3D Car"
   camera-controls
   exposure="1.2"
   shadow-intensity="1.5"
@@ -97,34 +74,40 @@
 
 <script>
   const viewer = document.getElementById("car");
+  const label = document.getElementById("mode");
 
-  let insideView = true;
+  let inside = false;
 
-  const driverView = {
-    orbit: "0deg 90deg 1.2m",
-    target: "0m 1m 0m"
+  // ✅ MUCH better tuned presets
+  const interior = {
+    orbit: "0deg 85deg 0.9m",
+    target: "0m 1.05m 0.6m"
   };
 
-  const outsideView = {
-    orbit: "45deg 75deg 3m",
+  const exterior = {
+    orbit: "0deg 75deg 3.2m",
     target: "0m 0.5m 0m"
   };
 
-  function toggleView() {
-    insideView = !insideView;
+  function apply(view) {
+    viewer.cameraOrbit = view.orbit;
+    viewer.cameraTarget = view.target;
+  }
 
-    if (insideView) {
-      viewer.cameraOrbit = driverView.orbit;
-      viewer.cameraTarget = driverView.target;
+  function toggleView() {
+    inside = !inside;
+
+    if (inside) {
+      apply(interior);
+      label.innerText = "Interior (Driver View)";
     } else {
-      viewer.cameraOrbit = outsideView.orbit;
-      viewer.cameraTarget = outsideView.target;
+      apply(exterior);
+      label.innerText = "Exterior View";
     }
   }
 
-  // set default view
-  viewer.cameraOrbit = driverView.orbit;
-  viewer.cameraTarget = driverView.target;
+  // default
+  apply(exterior);
 </script>
 
 </body>
